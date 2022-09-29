@@ -1,12 +1,29 @@
 <template>
 	<main>
-		<header class="query-header">
-			<input
-				type="search"
-				placeholder="search for a country"
-				@keyup.enter="getCountry($event)"
-				v-model.lazy="searchQuery"
-			/>
+		<header class="query">
+			<div class="search-input">
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 16 16"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						fill-rule="evenodd"
+						clip-rule="evenodd"
+						d="M11.1111 9.77778H10.4L10.1333 9.51111C11.0222 8.53333 11.5556 7.2 11.5556 5.77778C11.5556 2.57778 8.97778 0 5.77778 0C2.57778 0 0 2.57778 0 5.77778C0 8.97778 2.57778 11.5556 5.77778 11.5556C7.2 11.5556 8.53333 11.0222 9.51111 10.1333L9.77778 10.4V11.1111L14.2222 15.5556L15.5556 14.2222L11.1111 9.77778ZM5.77778 9.77778C3.55556 9.77778 1.77778 8 1.77778 5.77778C1.77778 3.55556 3.55556 1.77778 5.77778 1.77778C8 1.77778 9.77778 3.55556 9.77778 5.77778C9.77778 8 8 9.77778 5.77778 9.77778Z"
+						fill="#B2B2B2"
+					/>
+				</svg>
+
+				<input
+					type="search"
+					placeholder="search for a country"
+					@keyup.enter="getCountry($event)"
+					v-model.lazy="searchQuery"
+				/>
+			</div>
 			<select
 				name="Filter By Region"
 				id="filter-drop-down"
@@ -103,45 +120,65 @@
 	});
 </script>
 <style lang="sass" scoped>
+		.query
+			display: flex
+			flex-direction: column
+			gap: 1rem
 
+			select
+				width: fit-content
+				padding: 0.5rem 2rem
+				border-radius: 10px
+				outline: none
+				border:0
+				box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px
+				option
+					top:2rem
 
+			.search-input
+				padding: 0.5rem 2rem
+				border-radius: 10px
+				box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px
+				display: flex
+				gap: 1rem
+				align-items: center
+				input
+					border: none
 
-	header
-		display: flex
-		flex-direction: column
-		gap: 1rem
+		.main
+			display: flex
+			flex-direction: column
+			gap: 2rem
+			align-items: center
+			padding-block: 2rem
 
-		select
-			width: fit-content
-			padding: 0.5rem 2rem
-			border-radius: 10px
-			border: 2px solid white
-
-		input
-			padding: 0.5rem 2rem
-			border-radius: 10px
-
-	.main
-		display: flex
-		flex-direction: column
-		gap: 2rem
-		align-items: center
-		padding-block: 2rem
-		a
-			text-decoration: none
-			color: inherit
 			.card
 				border-radius: 1rem
 				box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px
 				overflow: hidden
+				a
+					text-decoration: none
+					color: inherit
 
-				.card-text
-					padding: 2rem
+					.card-text
+						padding: 2rem
 
-					h2
-						padding-bottom: 2rem
+						h2
+							padding-bottom: 2rem
 
-					p, h3
-						display: inline-block
-						padding-bottom: 1rem
+						p, h3
+							display: inline-block
+							padding-bottom: 1rem
+
+
+	@media (min-width:650px)
+	.query
+			flex-direction: row
+			justify-content: space-between
+			padding: 2rem
+	.main
+		display: grid
+		grid-template-columns: repeat(auto-fit,20rem)
+		justify-content: center
+		padding:2rem
 </style>
