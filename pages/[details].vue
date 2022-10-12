@@ -3,7 +3,7 @@ const route = useRoute();
 
 
 const url = ref(
-	`https://restcountries.com/v3.1/name/${route.params.details}`
+	`https://restcountries.com/v3.1/name/${route.params.details}?fullText=true`
 );
 
 
@@ -23,18 +23,18 @@ countryDetails.value.forEach(async (country) => {
 	// console.log('current country.borders', country.borders);
 	country.borders.forEach(async (border) => {
 		// console.log('current border:', border);
-		const urlBorder = `https://restcountries.com/v2/alpha/${border}`;
+		const urlBorder = `https://restcountries.com/v3.1/alpha/${border}`;
 
 		const { data, error } = await useFetch(urlBorder, {
 			key: urlBorder,
 		});
 
 		if (!error.value) {
-			console.log('got proxy', data.value.name);
-			const result = data.value.name;
+			console.log('got proxy', data.value);
+			const result = data.value[0].name.common;
 			neighbourArr.push(result);
 		} else {
-			console.log('error');
+			// console.log('error');
 		}
 	});
 
@@ -77,7 +77,7 @@ onMounted(() => (document.documentElement.scrollTop = 0));
 					<h3>
 						Native name:
 						<p v-for="native in nativeArr">
-							{{ native }} &nbsp;
+							{{ native }}&nbsp;
 						</p>
 						<!-- <pre>{{nativeArr}}</pre> -->
 					</h3>
