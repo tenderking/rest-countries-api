@@ -47,112 +47,122 @@ countryDetails.value.forEach(async (country) => {
 onMounted(() => (document.documentElement.scrollTop = 0));
 </script>
 <template>
-	<div class="details-page">
-		<NuxtLink to="/">
-			<button>
+	<main class="details-page">
+		<header>
+
+			<NuxtLink to="/" class="link__back">
+
 				<i><svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="arrow" xmlns="http://www.w3.org/2000/svg"
-						stroke="var(--fill-color)">
+						stroke="var(--fill-color)" aria-hidden="true">
 						<path fill-rule="evenodd" clip-rule="evenodd"
 							d="M5.81802 3.6967L6.87868 4.75736L3.3785 8.25754H16.7428L16.7428 9.74246H3.3785L6.87868 13.2426L5.81802 14.3033L0.514719 9L5.81802 3.6967Z"
 							fill="var(--fill-color)" />
 					</svg>
 				</i>
 				<p>back</p>
-			</button>
-		</NuxtLink>
+
+			</NuxtLink>
+
+		</header>
 		<div v-if="pending">Loading...</div>
 		<div v-if="error">Something went wrong...</div>
-		<div v-else>
-			<div v-show="countryDetails" class="details-container">
-				<template v-for="country in countryDetails" :key="country.name.common">
-					<img :src="country.flags.png" alt="flag" />
+		<section v-else class="details-container">
 
-					<div class="basic-details">
-						<h2>Details {{ country.name.common }}</h2>
+			<template v-for="country in countryDetails" :key="country.name.common">
+				<img :src="country.flags.png" alt="flag" />
 
-						<h3>
-							Native name:
-							<p v-for="native in nativeArr">
-								{{ native }} &nbsp;
-							</p>
-							<!-- <pre>{{nativeArr}}</pre> -->
-						</h3>
+				<div class="basic-details">
+					<h2>Details {{ country.name.common }}</h2>
 
-						<h3>
-							Population:
-							<p>{{ country.population.toLocaleString("en-US") }}</p>
-						</h3>
+					<h3>
+						Native name:
+						<p v-for="native in nativeArr">
+							{{ native }} &nbsp;
+						</p>
+						<!-- <pre>{{nativeArr}}</pre> -->
+					</h3>
 
-						<h3>
-							Region:
-							<p>{{ country.region }}</p>
-						</h3>
+					<h3>
+						Population:
+						<p>{{ country.population.toLocaleString("en-US") }}</p>
+					</h3>
 
-						<h3>
-							Sub Region:
-							<p>{{ country.region }}</p>
-						</h3>
+					<h3>
+						Region:
+						<p>{{ country.region }}</p>
+					</h3>
 
-						<h3>
-							Capital:
-							<p v-for="lan in country.capital">{{ lan }}, &nbsp;</p>
-						</h3>
-					</div>
-				</template>
+					<h3>
+						Sub Region:
+						<p>{{ country.region }}</p>
+					</h3>
 
-				<template v-for="item in countryDetails" :key="item.name.common">
-					<div class="special-details">
-						<h3>
-							Top level Domain:
-							<p>{{ item.tld[0] }}</p>
-						</h3>
+					<h3>
+						Capital:
+						<p v-for="lan in country.capital">{{ lan }}, &nbsp;</p>
+					</h3>
+				</div>
+			</template>
 
-						<h3>
-							Currencies:
-							<p v-for="currency in item.currencies">{{ currency.name }}</p>
-						</h3>
+			<template v-for="item in countryDetails" :key="item.name.common">
+				<div class="special-details">
+					<h3>
+						Top level Domain:
+						<p>{{ item.tld[0] }}</p>
+					</h3>
 
-						<h3>
-							Langauges:
-							<p v-for="lan in item.languages">{{ lan }}, &nbsp;</p>
-						</h3>
-					</div>
+					<h3>
+						Currencies:
+						<p v-for="currency in item.currencies">{{ currency.name }}</p>
+					</h3>
 
-					<div class="neighbour">
-						<h3>Border countries</h3>
+					<h3>
+						Langauges:
+						<p v-for="lan in item.languages">{{ lan }}, &nbsp;</p>
+					</h3>
+				</div>
 
-						<NuxtLink class="neighbour__link" v-for="neighbour in neighbourArr" :to="neighbour">{{
-						neighbour }}
-						</NuxtLink>
+				<div class="neighbour">
+					<h3>Border countries</h3>
+					<NuxtLink class="neighbour__link" v-for="neighbour in neighbourArr" :to="neighbour" tabindex="0">
 
-					</div>
-				</template>
-			</div>
-		</div>
-	</div>
+						{{ neighbour }}
+
+					</NuxtLink>
+
+				</div>
+			</template>
+
+		</section>
+	</main>
 </template>
 
 <style lang="sass" scoped>
 	.details-page
 		padding: 2rem
 		height: 100%
-		.neighbour
-			&__link
-				box-shadow: var(--shadow)
-				padding-inline: 1rem
-		a
-			button
-				padding: 0.5rem 1rem
-				display: flex
-				box-shadow: var(--shadow)
-				border: none
-				background-color: var(--elements)
-				justify-content: center
-				gap: 0.5rem
-				margin-bottom: 1rem
-
-				p
-					margin:0
+		
+		a.link__back
+			padding: 0.5rem 1rem
+			width: max-content
+			display: flex
+			box-shadow: var(--shadow)
+			border: none
+			background-color: var(--elements)
+			justify-content: center
+			gap: 0.75rem
+			margin-bottom: 1rem
+			p
+				margin:0
+		.details-container			
+			.neighbour
+				.neighbour__link
+					padding-inline: 1rem
+					box-shadow: var(--shadow)
+					margin-inline: 0.25rem
+					border-radius: var(--radius)
+					background-color: var(--elements)
+				
 
 
 		img
@@ -167,10 +177,9 @@ onMounted(() => (document.documentElement.scrollTop = 0));
 
 	@media (min-width:650px)
 		.details-page
-			a
-				button
-					box-shadow: none
-			div
+			a.link__back
+				box-shadow: none
+			section
 				height: 100%
 				padding: 1em
 

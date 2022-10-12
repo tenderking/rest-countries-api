@@ -11,6 +11,10 @@ useHead({
 			crossorigin: "",
 		},
 	],
+	title: "Rest Countries API",
+	htmlAttrs: {
+		lang: "en"
+	}
 });
 const isDark = useDark({
 	selector: "#__nuxt",
