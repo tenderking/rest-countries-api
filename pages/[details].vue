@@ -1,25 +1,50 @@
 <script setup>
 const route = useRoute();
 
-const url = ref(
-	`https://restcountries.com/v3.1/name/${route.params.details}?fullText=true`
-);
-const urlBorder = ref(
-	"https://restcountries.com/v2/alpha/" + route.params.details
-);
-const countryDetails = ref(null);
-const { pending, data, error } = await useFetch(url, {
-	initialCache: false,
-}).catch(() => useFetch(urlBorder).catch(error => error));
-countryDetails.value = await data.value;
-onMounted(() => (document.documentElement.scrollTop = 0));
 
-watch(
-	() => route.params.details,
-	() => {
-		console.log("params Details changed");
-	}
+const url = ref(
+	`https://restcountries.com/v3.1/name/${route.params.details}`
 );
+
+
+const {
+	pending,
+	data: countryDetails,
+	error,
+} = await useFetch(url, {
+	key: url.value,
+});
+
+
+const neighbourArr = reactive([]);
+let nativeArr = new Set()
+countryDetails.value.forEach(async (country) => {
+	// console.log('current country', country.cca2);
+	// console.log('current country.borders', country.borders);
+	country.borders.forEach(async (border) => {
+		// console.log('current border:', border);
+		const urlBorder = `https://restcountries.com/v2/alpha/${border}`;
+
+		const { data, error } = await useFetch(urlBorder, {
+			key: urlBorder,
+		});
+
+		if (!error.value) {
+			console.log('got proxy', data.value.name);
+			const result = data.value.name;
+			neighbourArr.push(result);
+		} else {
+			console.log('error');
+		}
+	});
+
+	Object.values(country.name.nativeName).forEach(val => nativeArr.add(val.common))
+});
+
+
+// console.log(borderCountry.value)
+
+onMounted(() => (document.documentElement.scrollTop = 0));
 </script>
 <template>
 	<div class="details-page">
@@ -47,14 +72,15 @@ watch(
 
 						<h3>
 							Native name:
-							<p v-for="native in country.name.nativeName">
-								{{ native.common }}, &nbsp;
+							<p v-for="native in nativeArr">
+								{{ native }} &nbsp;
 							</p>
+							<!-- <pre>{{nativeArr}}</pre> -->
 						</h3>
 
 						<h3>
 							Population:
-							<p>{{ (country.population).toLocaleString('en-US') }}</p>
+							<p>{{ country.population.toLocaleString("en-US") }}</p>
 						</h3>
 
 						<h3>
@@ -94,8 +120,11 @@ watch(
 
 					<div class="neighbour">
 						<h3>Border countries</h3>
-						<NuxtLink class="neighbour__link" v-for="neighbour in item.borders" :to="neighbour">{{ neighbour }}
+
+						<NuxtLink class="neighbour__link" v-for="neighbour in neighbourArr" :to="neighbour">{{
+						neighbour }}
 						</NuxtLink>
+
 					</div>
 				</template>
 			</div>
@@ -110,7 +139,7 @@ watch(
 		.neighbour
 			&__link
 				box-shadow: var(--shadow)
-				padding-inline: 1rem				
+				padding-inline: 1rem
 		a
 			button
 				padding: 0.5rem 1rem
@@ -121,7 +150,7 @@ watch(
 				justify-content: center
 				gap: 0.5rem
 				margin-bottom: 1rem
-				
+
 				p
 					margin:0
 

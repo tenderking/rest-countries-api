@@ -28,8 +28,8 @@ function getCountry(e) {
 
 const allCountries = computed(() => {
 	if (regionSelected.value.length) {
-		console.log(regionUrl);
-		console.log("selected: ", regionSelected.value);
+		// console.log(regionUrl);
+		// console.log("selected: ", regionSelected.value);
 		return regionApi.value;
 	}
 	if (isSearching.value) {
