@@ -16,22 +16,10 @@ useHead({
 		lang: "en"
 	}
 });
-const isDark = useDark({
-	selector: "#__nuxt",
-	valueDark: "dark",
-	valueLight: "light",
-});
 
-const toggleDark = useToggle(isDark);
 </script>
 <template>
-	<nav>
-		<h1>Where in the world?</h1>
-		<button @click.prevent="toggleDark()">
-			<i> 🌙</i>
-			<h2>Dark Mode</h2>
-		</button>
-	</nav>
+	<NavBar />
 	<NuxtPage :page-key="$route.fullPath" />
 </template>
 <style>
@@ -50,7 +38,7 @@ const toggleDark = useToggle(isDark);
 	--lm-input: hsl(0, 0%, 52%);
 	--shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
 		rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
-	--radius: 10px;
+	--radius: 5px;
 	--fill-color: hsl(200, 15%, 8%);
 	--bg-color: var(--lm-bg);
 	/* --color: var(--lm-color); */
@@ -88,7 +76,6 @@ body {
 	font-size: 14px;
 	min-height: 100vh;
 }
-
 input,
 button,
 a {
@@ -96,30 +83,4 @@ a {
 	font: inherit;
 	color: inherit
 }
-</style>
-<style lang="sass">
-
-	nav
-		display: flex
-		justify-content: space-between
-		padding: 1rem
-		background: var(--elements)
-		box-shadow: var(--shadow)
-		h1
-			font-size: 24px
-			color: var(--color)
-		button
-			display: flex
-			align-items: center
-			background: 0
-			border: none
-			gap: 5px
-			h2
-				font-weight: 600
-				font-size: 16px
-				color: var(--color)
-
-	@media (min-width:650px)
-		nav
-			padding-inline: 2rem
 </style>
