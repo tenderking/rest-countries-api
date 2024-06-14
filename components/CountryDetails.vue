@@ -1,36 +1,39 @@
 <script lang="ts" setup>
+import type { Country } from '~/types/Countries'
 
-const neighbourArr = reactive<string[]>([])
-const nativeArr = reactive<Set<string>>(new Set())
 const props = defineProps<{
   url: string
 }>()
-
-const { pending, data: countryDetails, error } = await useFetch(props.url, {
+const neighbourArr = reactive<string[]>([])
+const nativeArr = reactive<Set<string>>(new Set())
+const { pending, data: countryDetails, error } = await useFetch<Country[]>(props.url, {
   key: props.url,
+
 })
+const imgUrl = ref<string>('')
 
-const imgUrl = await countryDetails.value[0].flags.svg.toString()
-await Object.values(countryDetails.value[0].name.nativeName).forEach((val) => nativeArr.add(val.common))
+if (countryDetails.value) {
+  imgUrl.value = await countryDetails.value[0].flags.svg.toString()
+  await Object.values(countryDetails.value[0].name.nativeName).forEach(val => nativeArr.add(val.common))
+  await countryDetails.value.forEach(async (country) => {
+    if (!country.borders)
+      return
+    country.borders.forEach(async (border) => {
+      const urlBorder = `https://restcountries.com/v3.1/alpha/${border}`
 
-await countryDetails.value.forEach(async (country) => {
-  country.borders.forEach(async (border) => {
-    const urlBorder = `https://restcountries.com/v3.1/alpha/${border}`
+      const { data, error } = await useFetch<Country[]>(urlBorder, {
+        key: urlBorder,
+      })
 
-    const { data, error } = await useFetch(urlBorder, {
-      key: urlBorder,
+      if (!error.value && data.value) {
+        const result = data.value[0].name.common
+        neighbourArr.push(result)
+      }
     })
-
-    if (!error.value) {
-      const result = data.value[0].name.common
-      neighbourArr.push(result)
-    }
   })
-
-
-})
-
+}
 </script>
+
 <template>
   <section class="details-container">
     <div v-if="pending">
@@ -40,99 +43,104 @@ await countryDetails.value.forEach(async (country) => {
       {{ error }}
     </div>
     <template v-else>
-      <img :src="imgUrl" alt="flag" />
-      <div class="details_info">
-
-        <template v-for="country in countryDetails" :key="country.name.common">
-          <ul class="basic-details">
-            <h2>Details {{ country.name.common }}</h2>
-
+      <img :src="imgUrl" alt="flag">
+      <div v-if="countryDetails" class="details_info">
+        <h2>{{ countryDetails[0].name.common }}</h2>
+        <div class="basic-details">
+          <ul>
             <li>
               <b> Native name: </b>
-              <span v-for="native in [...nativeArr]"> {{ native }}, &nbsp; </span>
+              <span v-for="native in [...nativeArr]" :key="native"> {{ native }}, &nbsp; </span>
             </li>
 
             <li>
               <b> Population: </b>
-              <span>{{ country.population.toLocaleString("en-US") }}</span>
+              <span>{{ countryDetails[0].population.toLocaleString("en-US") }}</span>
             </li>
 
             <li>
               <b> Region: </b>
-              {{ country.region }}
+              {{ countryDetails[0].region }}
             </li>
 
             <li>
               <b> Sub Region: </b>
-              {{ country.region }}
+              {{ countryDetails[0].region }}
             </li>
             <li>
               <b> Capital: </b>
-              <span v-for="lan in country.capital">{{ lan }}, &nbsp;</span>
+              <span v-for="lan in countryDetails[0].capital" :key="lan">{{ lan }}, &nbsp;</span>
             </li>
           </ul>
-        </template>
 
-        <template v-for="item in countryDetails" :key="item.name.common">
-          <ul class="special-details">
-            <h2>&nbsp;</h2>
+          <ul>
             <li>
               <b> Top level Domain:</b>
-              {{ item.tld[0] }}
+              {{ countryDetails[0].tld[0] }}
             </li>
             <li>
               <b> Currencies: </b>
-              <span v-for="currency in item.currencies">{{ currency.name }}</span>
+              <span v-for="currency in countryDetails[0].currencies" :key="currency">{{ currency.name }}</span>
             </li>
             <li>
               <b> Langauges: </b>
-              <span v-for="lan in item.languages">{{ lan }}, &nbsp;</span>
+              <span v-for="lan in countryDetails[0].languages" :key="lan">{{ lan }}, &nbsp;</span>
             </li>
           </ul>
+        </div>
+        <div class="neighbour">
+          <h3>Border countries</h3>
+          <NuxtLink v-for="neighbour in neighbourArr" :key="neighbour" class="neighbour__link" :to="neighbour"
+            tabindex="0">
+            <span class="neighbour__link-button">
 
-          <div class="neighbour">
-            <h3>Border countries</h3>
-            <NuxtLink class="neighbour__link" v-for="neighbour in neighbourArr" :to="neighbour" tabindex="0">
-              <span class="neighbour__link-button">
-
-                {{ neighbour }}
-              </span>
-            </NuxtLink>
-          </div>
-        </template>
+              {{ neighbour || "No border found" }}
+            </span>
+          </NuxtLink>
+        </div>
       </div>
     </template>
   </section>
-
-
 </template>
-
 
 <style lang="sass">
 .details-container
+  .basic-details
+    display: flex
+    flex-direction: column
+    gap: 2rem
+    ul
+      list-style: none
+      padding: 0
+      margin: 0
+      li
+        margin-bottom: 0.5rem
   .neighbour
-    padding: 2rem
+    padding-block: 2rem
+    h3
+      margin-bottom: 1rem
     .neighbour__link
+      display: inline-block
       padding:0.25rem 0.5rem
       box-shadow: var(--shadow)
-      margin: 0.5rem
+      margin: 0.25rem
       border-radius: var(--radius)
       background-color: var(--elements)
       .neighbour__link-button
         padding: 0.5rem
         border-radius: var(--radius)
         margin: 1.5rem
-        h2
-          margin-bottom: 2rem
       p
         display: inline-block
         margin-bottom: 1rem
         font-weight: normal
-
   img
     border-radius: var(--radius)
     margin-block: 2rem // Added space for h2
-
+    width: 100%
+  h2
+    font-size: 2rem
+    margin-block: 1rem 1rem
 
 @media (min-width: 650px)
   .details-container
@@ -145,22 +153,17 @@ await countryDetails.value.forEach(async (country) => {
       grid-row: 1/4
       width: 100%
     .details_info
-      display: grid
+      grid-column: 3/5
+      display: flex
       padding: 2rem
       justify-content: center
-      grid-column: 3 / span 2
-      grid-row: 1/4
-      grid-template-columns: subgrid
+      flex-direction: column
+      width: 100%
       .basic-details
-        grid-column: 1/2
-        
-        h2
-          grid-row: 1/2
-      .special-details
-        grid-column: 2/3
-        align-self: start
-
-      .neighbour
-        grid-column: 1 / span 2 // Span two columns (3 and 4)
-        justify-content: center
+        display: flex
+        flex-direction: row
+        gap: 2rem
+    h2
+      font-size: 2rem
+      margin-block: 2rem 1rem
 </style>

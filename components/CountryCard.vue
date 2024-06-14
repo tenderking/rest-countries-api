@@ -1,27 +1,35 @@
+<script lang="ts" setup>
+import type { Country } from '~/types/Countries'
+
+defineProps({
+  country: Object as PropType<Country>,
+})
+</script>
+
 <template>
-  <NuxtLink :to="country.name.common" :replace="true" class="card">
-    <img :src="country.flags.svg" :alt="country.name.common" />
+  <NuxtLink :to="country?.name.common" :replace="true" class="card">
+    <img :src="country?.flags.svg" :alt="country?.name.common">
     <div class="card-text">
       <h2>
-        {{ country.name.common }}
+        {{ country?.name.common }}
       </h2>
       <div>
         <span>
           <h3>Population:&nbsp;</h3>
           <p>
-            {{ (country.population).toLocaleString('en-US') }}
+            {{ Number(country?.population).toLocaleString('en-US') }}
           </p>
         </span>
       </div>
       <div>
         <h3>Region:&nbsp;</h3>
         <p>
-          {{ country.region }}
+          {{ country?.region }}
         </p>
       </div>
       <div>
         <h3>Capital:&nbsp;</h3>
-        <p v-for="capital in country.capital" :key="capital">
+        <p v-for="capital in country?.capital" :key="capital">
           <span>
             {{ capital }}
           </span>
@@ -31,13 +39,6 @@
   </NuxtLink>
 </template>
 
-<script lang="ts" setup>
-defineProps({
-  country: Object
-})
-
-</script>
-
 <style lang="sass">
 .card
   border-radius: var(--radius)
@@ -46,7 +47,7 @@ defineProps({
   background: var(--elements)
   img
     width: 100%
-    height: 12rem
+    height: 10rem
     object-fit: cover
   .card-text
     padding: 2rem
